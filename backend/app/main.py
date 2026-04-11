@@ -23,6 +23,7 @@ from app.models import PrescriptionResult
 from app.nlp_extractor import extract_medicines, get_supported_medicines
 from app.ocr_engine import extract_best_text
 from app.safety_engine import run_safety_checks
+from app.medicine_info import get_medicine_info
 
 logger = logging.getLogger("healthmate")
 
@@ -218,6 +219,15 @@ async def analyze_prescription(
             return result
 
         medicines = extract_medicines(final_text)
+
+        # Enrich medicines with extra info from dataset
+        for med in medicines:
+            info = get_medicine_info(med.medicine_name)
+            if info:
+                med.common_use = info.get("common_use") or None
+                med.allergy_warning = info.get("allergy_warning") or None
+                med.side_effects = info.get("side_effects") or None
+
         warnings = run_safety_checks(medicines)
 
         if medicines:
@@ -294,6 +304,12 @@ async def submit_feedback(payload: FeedbackRequest, user: dict = Depends(get_cur
 @app.post("/api/debug/parse-text")
 async def debug_parse_text(payload: DebugParseRequest):
     medicines = extract_medicines(payload.raw_text)
+    for med in medicines:
+        info = get_medicine_info(med.medicine_name)
+        if info:
+            med.common_use = info.get("common_use") or None
+            med.allergy_warning = info.get("allergy_warning") or None
+            med.side_effects = info.get("side_effects") or None
     warnings = run_safety_checks(medicines)
     return {
         "medicines": [m.model_dump() for m in medicines],

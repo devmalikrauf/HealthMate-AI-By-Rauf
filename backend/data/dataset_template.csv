@@ -1,0 +1,3 @@
+brand_name,generic_name,strength,form,frequency,duration,common_use,allergy_warning,side_effects,age_group,disease,instructions,max_daily_dose_mg
+Calpol,paracetamol,500 mg,Tablet,Every 6 hours,3 days,"Fever, pain",Liver disease,Nausea,Adult,Fever,after food,4000
+EXAMPLE_BRAND,example_generic,100 mg,Tablet,Twice daily,5 days,Example use,Example allergy warning,Example side effects,Adult,Example disease,after food,1000

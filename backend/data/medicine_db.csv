@@ -1,0 +1,32 @@
+brand_name,generic_name,strength,form,frequency,duration,common_use,allergy_warning,side_effects,age_group,disease,instructions,max_daily_dose_mg
+Calpol,paracetamol,500 mg,Tablet,Every 6 hours,3 days,"Fever, pain",Liver disease,Nausea,Adult,Fever,after food,4000
+Panadol,paracetamol,500 mg,Tablet,Every 6 hours,3 days,"Fever, pain",Liver disease,Nausea,Children,Fever,after food,4000
+Brufen,ibuprofen,400 mg,Tablet,Every 8 hours,3 days,"Fever, pain",Gastric ulcer,Stomach upset,Adult,Fever,after food,3200
+Buscopan,hyoscine butylbromide,10 mg,Tablet,Twice daily,5 days,Stomach cramps,Glaucoma,Dry mouth,Adult,Stomach,before food,60
+Motilium,domperidone,10 mg,Tablet,Three times daily,5 days,Nausea,Heart conditions,Headache,Adult,Stomach,before food,30
+Flagyl,metronidazole,400 mg,Tablet,Three times daily,7 days,Stomach infection,Alcohol use,Metallic taste,Adult,Stomach,after food,2000
+Lasix,furosemide,40 mg,Tablet,Once daily,As advised,Fluid retention,Kidney failure,Dehydration,Adult,Kidney,before food,80
+Renitec,enalapril,5 mg,Tablet,Once daily,Long term,Blood pressure,Pregnancy,Dizziness,Adult,Kidney,before food,40
+Urosol,disodium hydrogen citrate,10 ml,Syrup,Twice daily,5 days,Urinary alkalizer,Kidney stones,Stomach upset,Adult,Kidney,after food,
+Cataflam,diclofenac,50 mg,Tablet,Twice daily,5 days,Joint pain,Heart disease,Gastritis,Adult,Joint Pain,after food,150
+Synflex,naproxen,250 mg,Tablet,Twice daily,5 days,Arthritis,Gastric ulcer,Heartburn,Adult,Joint Pain,after food,1250
+Arinac,diclofenac,50 mg,Tablet,Twice daily,3 days,Joint pain,Liver disease,Nausea,Adult,Joint Pain,after food,150
+Glucophage,metformin,500 mg,Tablet,Twice daily,Long term,Diabetes,Kidney disease,Diarrhea,Adult,Diabetes,with food,2550
+Amaryl,glimepiride,2 mg,Tablet,Once daily,Long term,Diabetes,Hypoglycemia,Low sugar,Adult,Diabetes,before food,8
+Janumet,sitagliptin,50 mg,Tablet,Twice daily,Long term,Diabetes,Pancreatitis,GI upset,Adult,Diabetes,with food,100
+Baraclude,entecavir,0.5 mg,Tablet,Once daily,Long term,Hepatitis B,Liver failure,Fatigue,Adult,Hepatitis,on empty stomach,1
+Pegasys,peginterferon,180 mcg,Injection,Weekly,48 weeks,Hepatitis C,Autoimmune disease,Flu symptoms,Adult,Hepatitis,,
+Sovaldi,sofosbuvir,400 mg,Tablet,Once daily,12 weeks,Hepatitis C,Renal disease,Headache,Adult,Hepatitis,with food,400
+Coversyl,perindopril,4 mg,Tablet,Once daily,Long term,Hypertension,Pregnancy,"Nausea, headache",Adult,Hypertension,before food,16
+Norvasc,amlodipine,5 mg,Tablet,Once daily,Long term,Hypertension,Heart failure,"Nausea, headache",Adult,Hypertension,,10
+Augmentin,amoxiclav,625 mg,Tablet,Twice daily,7 days,Bacterial infection,Penicillin allergy,"Diarrhea, nausea",Adult,Infection,after food,3000
+Dolo,paracetamol,650 mg,Tablet,Three times daily,3 days,"Fever, pain",Liver disease,Nausea,Adult,Fever,after food,4000
+Crocin,paracetamol,500 mg,Tablet,Every 6 hours,3 days,"Fever, pain",Liver disease,Nausea,Adult,Fever,after food,4000
+Ecosprin,aspirin,75 mg,Tablet,Once daily,Long term,Blood thinner,Bleeding disorders,Stomach upset,Adult,Heart,after food,4000
+Glycomet,metformin,500 mg,Tablet,Twice daily,Long term,Diabetes,Kidney disease,Diarrhea,Adult,Diabetes,with food,2550
+Pan,pantoprazole,40 mg,Tablet,Once daily,14 days,Acidity,Liver disease,Headache,Adult,Stomach,before food,40
+Shelcal,calcium,500 mg,Tablet,Once daily,Long term,Calcium supplement,Hypercalcemia,Constipation,Adult,Bone health,after food,2500
+Stamlo,amlodipine,5 mg,Tablet,Once daily,Long term,Hypertension,Heart failure,Dizziness,Adult,Hypertension,,10
+Telma,telmisartan,40 mg,Tablet,Once daily,Long term,Hypertension,Pregnancy,Dizziness,Adult,Hypertension,,80
+Combiflam,ibuprofen,400 mg,Tablet,Three times daily,3 days,"Pain, inflammation",Gastric ulcer,Stomach upset,Adult,Pain,after food,3200
+Azee,azithromycin,500 mg,Tablet,Once daily,3 days,Bacterial infection,Liver disease,"Nausea, diarrhea",Adult,Infection,before food,500

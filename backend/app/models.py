@@ -9,6 +9,10 @@ class MedicineEntry(BaseModel):
     duration: str | None = None
     instructions: str | None = None
     confidence: float = 0.0  # 0.0 to 1.0
+    # Extra info from medicine dataset
+    common_use: str | None = None
+    allergy_warning: str | None = None
+    side_effects: str | None = None
 
 
 class SafetyWarning(BaseModel):

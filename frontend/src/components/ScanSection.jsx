@@ -141,7 +141,18 @@ export default function ScanSection({ user, onNeedAuth }) {
                     {m.generic_name && m.generic_name !== m.name && (
                       <span className="tag tag-gen">🧬 {m.generic_name}</span>
                     )}
+                    {m.common_use && <span className="tag tag-use">🩺 {m.common_use}</span>}
                   </div>
+                  {(m.allergy_warning || m.side_effects) && (
+                    <div className="med-extra">
+                      {m.allergy_warning && (
+                        <p className="med-allergy">⚠️ <strong>Allergy:</strong> {m.allergy_warning}</p>
+                      )}
+                      {m.side_effects && (
+                        <p className="med-sides">💊 <strong>Side Effects:</strong> {m.side_effects}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

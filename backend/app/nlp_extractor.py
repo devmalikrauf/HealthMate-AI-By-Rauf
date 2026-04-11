@@ -31,6 +31,14 @@ COMMON_MEDICINES = sorted(set([
     # Common brand names used in South Asian prescriptions
     "augmentin", "azee", "combiflam", "crocin", "dolo", "ecosprin",
     "glycomet", "pan", "shelcal", "stamlo", "telma",
+    # Pakistani brand names from medicine dataset
+    "amaryl", "arinac", "baraclude", "brufen", "buscopan", "calpol",
+    "cataflam", "coversyl", "flagyl", "glucophage", "janumet", "lasix",
+    "motilium", "norvasc", "panadol", "pegasys", "renitec", "sovaldi",
+    "synflex", "urosol",
+    # Additional generics from dataset
+    "disodium hydrogen citrate", "entecavir", "hyoscine butylbromide",
+    "peginterferon", "perindopril", "sofosbuvir",
 ]))
 
 # Brand-to-generic normalization helps keep output consistent.
@@ -46,10 +54,31 @@ MEDICINE_ALIASES = {
     "shelcal": "calcium",
     "stamlo": "amlodipine",
     "telma": "telmisartan",
+    # Pakistani brand → generic mappings from dataset
+    "amaryl": "glimepiride",
+    "arinac": "diclofenac",
+    "baraclude": "entecavir",
+    "brufen": "ibuprofen",
+    "buscopan": "hyoscine butylbromide",
+    "calpol": "paracetamol",
+    "cataflam": "diclofenac",
+    "coversyl": "perindopril",
+    "flagyl": "metronidazole",
+    "glucophage": "metformin",
+    "janumet": "sitagliptin",
+    "lasix": "furosemide",
+    "motilium": "domperidone",
+    "norvasc": "amlodipine",
+    "panadol": "paracetamol",
+    "pegasys": "peginterferon",
+    "renitec": "enalapril",
+    "sovaldi": "sofosbuvir",
+    "synflex": "naproxen",
+    "urosol": "disodium hydrogen citrate",
 }
 
 COMMON_MEDICINE_PATTERNS = [
-    (med, re.compile(r"\\b" + re.escape(med) + r"\\b", re.IGNORECASE))
+    (med, re.compile(r"\b" + re.escape(med) + r"\b", re.IGNORECASE))
     for med in sorted(COMMON_MEDICINES, key=len, reverse=True)
 ]
 

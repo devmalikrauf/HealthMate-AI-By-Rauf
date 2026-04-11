@@ -16,6 +16,20 @@ MAX_DOSAGE_WARNINGS = {
     "cetirizine": {"max_mg": 10, "note": "Typically max 10mg/day"},
     "diclofenac": {"max_mg": 150, "note": "Max 150mg/day"},
     "gabapentin": {"max_mg": 3600, "note": "Max 3.6g/day"},
+    # Additional thresholds from Pakistani medicine dataset
+    "domperidone": {"max_mg": 30, "note": "Max 30mg/day for adults"},
+    "furosemide": {"max_mg": 80, "note": "Max 80mg/day for adults"},
+    "naproxen": {"max_mg": 1250, "note": "Max 1.25g/day for adults"},
+    "enalapril": {"max_mg": 40, "note": "Max 40mg/day for adults"},
+    "glimepiride": {"max_mg": 8, "note": "Max 8mg/day for adults"},
+    "metronidazole": {"max_mg": 2000, "note": "Max 2g/day for adults"},
+    "perindopril": {"max_mg": 16, "note": "Max 16mg/day for adults"},
+    "amlodipine": {"max_mg": 10, "note": "Max 10mg/day for adults"},
+    "pantoprazole": {"max_mg": 40, "note": "Typically max 40mg/day"},
+    "telmisartan": {"max_mg": 80, "note": "Max 80mg/day for adults"},
+    "sofosbuvir": {"max_mg": 400, "note": "Standard 400mg/day"},
+    "entecavir": {"max_mg": 1, "note": "Max 1mg/day for adults"},
+    "sitagliptin": {"max_mg": 100, "note": "Max 100mg/day for adults"},
 }
 
 # Medicines that sound similar (common confusion pairs)
