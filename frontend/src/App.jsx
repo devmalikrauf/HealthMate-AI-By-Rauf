@@ -1,114 +1,42 @@
-import { useState, useCallback } from "react";
-import UploadZone from "./components/UploadZone";
-import ResultsView from "./components/ResultsView";
-import { analyzePrescription } from "./api";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ScanPage from "./pages/ScanPage";
+import HistoryPage from "./pages/HistoryPage";
+import AdminPage from "./pages/AdminPage";
+import AboutPage from "./pages/AboutPage";
+
+function PrivateRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="page-loader"><div className="spinner" /></div>;
+  return user ? children : <Navigate to="/login" />;
+}
+
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="page-loader"><div className="spinner" /></div>;
+  if (!user) return <Navigate to="/login" />;
+  if (user.role !== "admin") return <Navigate to="/scan" />;
+  return children;
+}
 
 export default function App() {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-
-  const handleFileSelect = useCallback((selectedFile) => {
-    setFile(selectedFile);
-    setPreview(URL.createObjectURL(selectedFile));
-    setResult(null);
-    setError(null);
-  }, []);
-
-  const handleRemove = useCallback(() => {
-    if (preview) URL.revokeObjectURL(preview);
-    setFile(null);
-    setPreview(null);
-    setResult(null);
-    setError(null);
-  }, [preview]);
-
-  const handleAnalyze = useCallback(async () => {
-    if (!file) return;
-    setLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const data = await analyzePrescription(file);
-      setResult(data);
-    } catch (err) {
-      setError(err.message || "Failed to analyze prescription. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [file]);
-
   return (
     <div className="app">
-      <header className="header">
-        <div className="header__logo">🏥</div>
-        <h1 className="header__title">HealthMate AI</h1>
-        <p className="header__subtitle">
-          AI-Powered Prescription Reader &amp; Safety Checker
-        </p>
-      </header>
-
-      {!preview && <UploadZone onFileSelect={handleFileSelect} disabled={loading} />}
-
-      {preview && (
-        <div className="preview">
-          <img src={preview} alt="Prescription preview" className="preview__img" />
-          <button className="preview__remove" onClick={handleRemove} title="Remove image">
-            ✕
-          </button>
-        </div>
-      )}
-
-      {preview && !loading && !result && (
-        <div style={{ textAlign: "center", marginTop: 16 }}>
-          <button className="btn btn--primary" onClick={handleAnalyze}>
-            🔍 Analyze Prescription
-          </button>
-        </div>
-      )}
-
-      {loading && (
-        <div className="loading">
-          <div className="loading__spinner" />
-          <div className="loading__text">
-            Analyzing your prescription...
-            <br />
-            <small>Preprocessing image → Running OCR → Extracting medicines</small>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="error-box">
-          <strong>Error:</strong> {error}
-          <br />
-          <button
-            className="btn btn--secondary"
-            style={{ marginTop: 12 }}
-            onClick={handleRemove}
-          >
-            Try Again
-          </button>
-        </div>
-      )}
-
-      <ResultsView result={result} />
-
-      {result && (
-        <div style={{ textAlign: "center", marginTop: 16 }}>
-          <button className="btn btn--secondary" onClick={handleRemove}>
-            📋 Analyze Another Prescription
-          </button>
-        </div>
-      )}
-
-      <footer className="footer">
-        HealthMate AI &copy; {new Date().getFullYear()} &middot; This tool is for
-        informational purposes only. Always consult a healthcare professional.
-      </footer>
+      <Navbar />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Navigate to="/scan" />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/scan" element={<PrivateRoute><ScanPage /></PrivateRoute>} />
+          <Route path="/history" element={<PrivateRoute><HistoryPage /></PrivateRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+        </Routes>
+      </main>
     </div>
   );
 }

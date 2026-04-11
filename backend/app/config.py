@@ -17,10 +17,14 @@ class Settings:
     FEEDBACK_DATASET_PATH: str = os.getenv(
         "FEEDBACK_DATASET_PATH", "./data/feedback.jsonl"
     )
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "healthmate-dev-secret-change-in-prod")
+    JWT_EXPIRY_HOURS: int = int(os.getenv("JWT_EXPIRY_HOURS", "72"))
+    DB_DIR: str = os.getenv("DB_DIR", "./data")
 
     def __init__(self):
         Path(self.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
         Path(self.FEEDBACK_DATASET_PATH).parent.mkdir(parents=True, exist_ok=True)
+        Path(self.DB_DIR).mkdir(parents=True, exist_ok=True)
 
 
 settings = Settings()
