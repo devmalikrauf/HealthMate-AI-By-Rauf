@@ -70,7 +70,7 @@ export default function HistorySection() {
                   <div className="hist-block">
                     <h5>💊 Medicines</h5>
                     {s.medicines?.map((m, i) => (
-                      <p key={i}><strong>{m.name}</strong>{m.dosage ? ` · ${m.dosage}` : ""}{m.frequency ? ` · ${m.frequency}` : ""}</p>
+                      <p key={i}><strong>{m.medicine_name}</strong>{m.strength ? ` ${m.strength}` : ""}{m.dosage ? ` · ${m.dosage}` : ""}{m.frequency ? ` · ${m.frequency}` : ""}</p>
                     ))}
                   </div>
                 </div>

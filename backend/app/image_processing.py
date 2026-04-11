@@ -27,19 +27,100 @@ def preprocess_image(image_bytes: bytes) -> Image.Image:
     # Convert to grayscale
     gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
 
+    # CLAHE for better contrast on handwritten text
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    gray = clahe.apply(gray)
+
     # Adaptive thresholding for mixed lighting
     binary = cv2.adaptiveThreshold(
         gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 31, 15
     )
 
     # Slight dilation to connect broken strokes in handwriting
-    kernel = np.ones((1, 1), np.uint8)
+    kernel = np.ones((2, 2), np.uint8)
     binary = cv2.dilate(binary, kernel, iterations=1)
+    binary = cv2.erode(binary, kernel, iterations=1)
 
     # Convert back to PIL
     result = Image.fromarray(binary)
 
     # Sharpen
+    result = result.filter(ImageFilter.SHARPEN)
+
+    return result
+
+
+def preprocess_handwritten(image_bytes: bytes) -> Image.Image:
+    """Aggressive preprocessing variant optimized for handwritten prescriptions."""
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+    max_dim = 3000
+    if max(img.size) > max_dim:
+        ratio = max_dim / max(img.size)
+        new_size = (int(img.width * ratio), int(img.height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+
+    # Upscale small images for better OCR on handwriting
+    if max(img.size) < 1500:
+        ratio = 1500 / max(img.size)
+        new_size = (int(img.width * ratio), int(img.height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+
+    cv_img = np.array(img)
+    cv_img = cv2.cvtColor(cv_img, cv2.COLOR_RGB2BGR)
+
+    # Stronger denoising for handwritten
+    cv_img = cv2.fastNlMeansDenoisingColored(cv_img, None, 15, 15, 7, 21)
+
+    gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+
+    # CLAHE contrast enhancement
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    gray = clahe.apply(gray)
+
+    # Otsu thresholding works better for handwriting with uniform background
+    _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Morphological closing to connect broken handwriting strokes
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+
+    result = Image.fromarray(binary)
+    result = result.filter(ImageFilter.SHARPEN)
+    result = ImageEnhance.Contrast(result).enhance(1.5)
+
+    return result
+
+
+def preprocess_upscaled(image_bytes: bytes) -> Image.Image:
+    """High-resolution variant: upscale 2x + bilateral filter for handwriting."""
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+    # Always upscale to at least 2500px for better character recognition
+    target = 2500
+    ratio = target / max(img.size)
+    if ratio > 1:
+        new_size = (int(img.width * ratio), int(img.height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+
+    cv_img = np.array(img)
+    cv_img = cv2.cvtColor(cv_img, cv2.COLOR_RGB2BGR)
+
+    # Bilateral filter preserves edges (good for handwriting)
+    cv_img = cv2.bilateralFilter(cv_img, 9, 75, 75)
+
+    gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+
+    # Gaussian blur + Otsu
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
+    _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Thin strokes slightly to separate connected characters
+    kernel = np.ones((2, 2), np.uint8)
+    binary = cv2.erode(binary, kernel, iterations=1)
+    binary = cv2.dilate(binary, kernel, iterations=1)
+
+    result = Image.fromarray(binary)
     result = result.filter(ImageFilter.SHARPEN)
 
     return result

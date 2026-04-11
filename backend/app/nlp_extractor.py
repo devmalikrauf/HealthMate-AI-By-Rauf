@@ -32,13 +32,13 @@ COMMON_MEDICINES = sorted(set([
     "augmentin", "azee", "combiflam", "crocin", "dolo", "ecosprin",
     "glycomet", "pan", "shelcal", "stamlo", "telma",
     # Pakistani brand names from medicine dataset
-    "amaryl", "arinac", "baraclude", "brufen", "buscopan", "calpol",
-    "cataflam", "coversyl", "flagyl", "glucophage", "janumet", "lasix",
-    "motilium", "norvasc", "panadol", "pegasys", "renitec", "sovaldi",
-    "synflex", "urosol",
+    "amaryl", "amdocal", "amdocal plus", "arinac", "baraclude", "brufen", "buscopan", "calpol",
+    "cataflam", "coversyl", "eltroxin", "flagyl", "glucophage", "janumet", "lasix",
+    "motilium", "norvasc", "panadol", "panical", "pegasys", "renitec", "sovaldi",
+    "synflex", "urosol", "vave",
     # Additional generics from dataset
-    "disodium hydrogen citrate", "entecavir", "hyoscine butylbromide",
-    "peginterferon", "perindopril", "sofosbuvir",
+    "atenolol", "disodium hydrogen citrate", "entecavir", "hyoscine butylbromide",
+    "levothyroxine", "peginterferon", "perindopril", "raloxifene", "sofosbuvir",
 ]))
 
 # Brand-to-generic normalization helps keep output consistent.
@@ -56,6 +56,8 @@ MEDICINE_ALIASES = {
     "telma": "telmisartan",
     # Pakistani brand → generic mappings from dataset
     "amaryl": "glimepiride",
+    "amdocal": "amlodipine",
+    "amdocal plus": "amlodipine",
     "arinac": "diclofenac",
     "baraclude": "entecavir",
     "brufen": "ibuprofen",
@@ -63,6 +65,7 @@ MEDICINE_ALIASES = {
     "calpol": "paracetamol",
     "cataflam": "diclofenac",
     "coversyl": "perindopril",
+    "eltroxin": "levothyroxine",
     "flagyl": "metronidazole",
     "glucophage": "metformin",
     "janumet": "sitagliptin",
@@ -70,11 +73,13 @@ MEDICINE_ALIASES = {
     "motilium": "domperidone",
     "norvasc": "amlodipine",
     "panadol": "paracetamol",
+    "panical": "pantoprazole",
     "pegasys": "peginterferon",
     "renitec": "enalapril",
     "sovaldi": "sofosbuvir",
     "synflex": "naproxen",
     "urosol": "disodium hydrogen citrate",
+    "vave": "raloxifene",
 }
 
 COMMON_MEDICINE_PATTERNS = [
@@ -82,9 +87,39 @@ COMMON_MEDICINE_PATTERNS = [
     for med in sorted(COMMON_MEDICINES, key=len, reverse=True)
 ]
 
+# Common OCR misreads for handwritten prescriptions (fuzzy alias → canonical)
+OCR_FUZZY_ALIASES: dict[str, str] = {}
+_OCR_VARIANTS = {
+    "amdocal": ["amdocl", "amdocol", "amdocel", "amdocai", "amdocai",
+                 "amdocal plus", "amdocl plus", "amdocol plus"],
+    "eltroxin": ["eltroxn", "eltroxln", "eltroxim", "eltroxen", "eltrox",
+                  "eitroxin", "eltroxine"],
+    "panical": ["panical", "panicol", "panacal", "pancel", "panicai",
+                 "panical"],
+    "vave": ["vave", "vava", "wave", "vav"],
+    "amlodipine": ["amlodipne", "amlodpine", "amlodipin", "amlodipinr"],
+    "levothyroxine": ["levothyroxin", "levothyroxne"],
+    "pantoprazole": ["pantoprazol", "pantoprazle", "pantoprazolr"],
+    "paracetamol": ["paracetamoi", "paracetarnol", "paracetaml", "parcetamol"],
+    "metformin": ["metfornin", "metforrnin", "metformn"],
+    "omeprazole": ["omeprazol", "omeprazle"],
+    "amoxicillin": ["amoxicilin", "amoxicilln", "amoxiciilin"],
+    "azithromycin": ["azithromycn", "azithromycln", "azlthromycin"],
+    "atenolol": ["atenoloi", "atenolal", "atenoiol"],
+    "losartan": ["losartn", "losartam"],
+    "cefixime": ["cefiximr", "ceflxime"],
+}
+for _canonical, _variants in _OCR_VARIANTS.items():
+    for _v in _variants:
+        OCR_FUZZY_ALIASES[_v.lower()] = _canonical
+
 # More complete strength patterns used in prescriptions
 STRENGTH_PATTERN = re.compile(
     r"\b(\d+(?:\.\d+)?)\s*(mg|mcg|g|ml|iu|units?|%)\b", re.IGNORECASE
+)
+# Bare number after medicine name (e.g. "Amdocal 50" means 50mg)
+BARE_STRENGTH_PATTERN = re.compile(
+    r"(?:tab(?:let)?s?\.?|ts\.?|cap(?:sule)?s?\.?)\s+\S+(?:\s+plus)?\s+(\d+)\b", re.IGNORECASE
 )
 
 DOSAGE_PATTERNS = [
@@ -94,7 +129,10 @@ DOSAGE_PATTERNS = [
 ]
 
 FREQUENCY_PATTERNS = [
-    (re.compile(r"\b([0-3]-[0-3]-[0-3])\b"), None),
+    (re.compile(r"\b([0-3]-[0-3]-[0-3]-[0-3])\b"), None),  # 2-0-2-0 (South Asian 4-slot)
+    (re.compile(r"\b([0-3]-[0-3]-[0-3])\b"), None),         # 1-0-1 (3-slot)
+    (re.compile(r"\b([0-3]\+[0-3]\+[0-3]\+[0-3])\b"), None),# 2+0+2+0
+    (re.compile(r"\b([0-3]\+[0-3]\+[0-3])\b"), None),       # 1+0+1
     (re.compile(r"\bOD\b", re.IGNORECASE), "once daily"),
     (re.compile(r"\bBD\b", re.IGNORECASE), "twice daily"),
     (re.compile(r"\bTDS\b", re.IGNORECASE), "thrice daily"),
@@ -128,7 +166,7 @@ INSTRUCTION_PATTERNS = [
 ]
 
 MED_PREFIX_PATTERN = re.compile(
-    r"^\s*(?:tab(?:let)?\.?|cap(?:sule)?\.?|syp\.?|syr(?:up)?\.?|inj(?:ection)?\.?|cream\.?|ointment\.?)\s+",
+    r"^\s*(?:\d+[.)]\s*)?(?:tab(?:let)?s?\.?|ts\.?|cap(?:sule)?s?\.?|syp\.?|syr(?:up)?\.?|inj(?:ection)?\.?|cream\.?|ointment\.?|drops?\.?)\s+",
     re.IGNORECASE,
 )
 
@@ -151,7 +189,46 @@ def _split_candidate_lines(raw_text: str) -> list[str]:
         compact = _normalize_space(raw_text)
         lines = [x.strip() for x in re.split(r"\s{2,}|;|\|", compact) if x.strip()]
 
-    return lines
+    # Further split lines that contain multiple medicine entries
+    # (e.g. OCR merged "Tab. X 50mg Tab. Y 20mg" into one line)
+    expanded = []
+    med_prefix_split = re.compile(
+        r"(?=(?:^|\s)(?:\d+[.)]\s*)?(?:tab(?:let)?s?\.?|ts\.?|cap(?:sule)?s?\.?|syp\.?|syr(?:up)?\.?|inj(?:ection)?\.?)(?:\s|$))",
+        re.IGNORECASE,
+    )
+    for line in lines:
+        parts = med_prefix_split.split(line)
+        parts = [p.strip() for p in parts if p.strip()]
+        if len(parts) > 1:
+            expanded.extend(parts)
+        else:
+            expanded.append(line)
+
+    # Also try splitting by known medicine names if still few lines
+    if len(expanded) <= 2:
+        all_text = " ".join(expanded)
+        found_positions = []
+        for med, pattern in COMMON_MEDICINE_PATTERNS:
+            for match in pattern.finditer(all_text):
+                found_positions.append(match.start())
+        # Also check fuzzy aliases
+        text_lower = all_text.lower()
+        for variant in sorted(OCR_FUZZY_ALIASES.keys(), key=len, reverse=True):
+            for match in re.finditer(r"\b" + re.escape(variant) + r"\b", text_lower):
+                found_positions.append(match.start())
+
+        if len(found_positions) > 1:
+            found_positions = sorted(set(found_positions))
+            new_lines = []
+            for i, pos in enumerate(found_positions):
+                end = found_positions[i + 1] if i + 1 < len(found_positions) else len(all_text)
+                chunk = all_text[pos:end].strip()
+                if chunk:
+                    new_lines.append(chunk)
+            if len(new_lines) > len(expanded):
+                expanded = new_lines
+
+    return expanded
 
 
 def get_supported_medicines() -> list[str]:
@@ -161,17 +238,29 @@ def get_supported_medicines() -> list[str]:
 
 def _find_known_medicine_in_line(text: str) -> str | None:
     """Find known medicine name in a line and normalize aliases to generic names."""
+    # Exact match first
     for med, pattern in COMMON_MEDICINE_PATTERNS:
         if pattern.search(text):
             return MEDICINE_ALIASES.get(med, med)
+
+    # Fuzzy fallback: check if any OCR variant appears in the text
+    text_lower = text.lower()
+    for variant, canonical in sorted(OCR_FUZZY_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
+        if re.search(r"\b" + re.escape(variant) + r"\b", text_lower):
+            return MEDICINE_ALIASES.get(canonical, canonical)
+
     return None
 
 
 def _parse_strength(text: str) -> str | None:
     match = STRENGTH_PATTERN.search(text)
-    if not match:
-        return None
-    return f"{match.group(1)} {match.group(2).lower()}"
+    if match:
+        return f"{match.group(1)} {match.group(2).lower()}"
+    # Fallback: bare number after Tab/Ts prefix (e.g. "Tab Amdocal 50" → "50 mg")
+    bare = BARE_STRENGTH_PATTERN.search(text)
+    if bare:
+        return f"{bare.group(1)} mg"
+    return None
 
 
 def _parse_dosage(text: str) -> str | None:

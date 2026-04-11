@@ -8,22 +8,22 @@ export default function AboutSection() {
 
       <div className="about-cards">
         <div className="card about-item">
-          <span>🎯</span>
+          <div className="about-icon mission">🎯</div>
           <h4>Our Mission</h4>
           <p>Help patients understand prescriptions using advanced OCR and NLP to extract medicine names, dosages, and frequencies.</p>
         </div>
         <div className="card about-item">
-          <span>🧠</span>
+          <div className="about-icon brain">🧠</div>
           <h4>How It Works</h4>
-          <p>Multi-pass OCR with intelligent preprocessing identifies 125+ medicines, detects dosages, and flags safety issues.</p>
+          <p>Multi-pass OCR with intelligent preprocessing identifies 150+ medicines, detects dosages, and flags safety issues.</p>
         </div>
         <div className="card about-item">
-          <span>🛡️</span>
+          <div className="about-icon shield">🛡️</div>
           <h4>Safety First</h4>
           <p>Checks for unusual dosages, duplicate medications, similar-sounding drug names, and missing information.</p>
         </div>
         <div className="card about-item">
-          <span>🔬</span>
+          <div className="about-icon tech">🔬</div>
           <h4>Technology</h4>
           <p>FastAPI, Tesseract OCR, OpenCV for backend. React + Vite PWA for a fast, installable frontend.</p>
         </div>
@@ -33,11 +33,11 @@ export default function AboutSection() {
         <h3>Key Features</h3>
         <div className="features-grid">
           <div className="feat"><span>📷</span><div><h5>Smart Image Processing</h5><p>Auto-rotation, deskewing, noise removal, contrast enhancement</p></div></div>
-          <div className="feat"><span>💊</span><div><h5>125+ Medicine Database</h5><p>Comprehensive whitelist with brand-to-generic mapping</p></div></div>
-          <div className="feat"><span>⚠️</span><div><h5>Safety Warnings</h5><p>Dosage checks, duplicate detection, confusion-prone name alerts</p></div></div>
-          <div className="feat"><span>📜</span><div><h5>Scan History</h5><p>Track all your previous prescription scans</p></div></div>
+          <div className="feat"><span>💊</span><div><h5>150+ Medicine Database</h5><p>Comprehensive whitelist with brand-to-generic mapping for Pakistani medicines</p></div></div>
+          <div className="feat"><span>⚠️</span><div><h5>Safety Warnings</h5><p>Dosage checks, duplicate detection, allergy alerts, side effects info</p></div></div>
+          <div className="feat"><span>📜</span><div><h5>Scan History</h5><p>Track all your previous prescription scans with detailed results</p></div></div>
           <div className="feat"><span>🔐</span><div><h5>Optional Sign In</h5><p>Create an account to save history — or scan as guest</p></div></div>
-          <div className="feat"><span>📱</span><div><h5>PWA Support</h5><p>Install as a mobile app for quick access</p></div></div>
+          <div className="feat"><span>📱</span><div><h5>PWA Support</h5><p>Install as a mobile app for quick access anywhere</p></div></div>
         </div>
       </div>
 

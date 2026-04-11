@@ -18,7 +18,7 @@ from app.database import (
     find_user, create_user, get_user_scans, save_scan,
     count_users, count_scans, get_scan_stats, get_all_scans, get_all_users,
 )
-from app.image_processing import auto_rotate, deskew, preprocess_image
+from app.image_processing import auto_rotate, deskew, preprocess_image, preprocess_handwritten, preprocess_upscaled
 from app.models import PrescriptionResult
 from app.nlp_extractor import extract_medicines, get_supported_medicines
 from app.ocr_engine import extract_best_text
@@ -201,10 +201,16 @@ async def analyze_prescription(
     try:
         original = Image.open(io.BytesIO(contents)).convert("RGB")
         processed = preprocess_image(contents)
+        handwritten = preprocess_handwritten(contents)
+        upscaled = preprocess_upscaled(contents)
         processed = deskew(auto_rotate(processed))
+        handwritten = deskew(auto_rotate(handwritten))
+        upscaled = deskew(auto_rotate(upscaled))
         original = deskew(auto_rotate(original))
 
-        final_text, ocr_confidence = extract_best_text([processed, original])
+        final_text, ocr_confidence = extract_best_text([processed, handwritten, upscaled, original])
+
+        logger.info("=== OCR Raw Text ===\n%s\n=== End OCR (conf=%.2f) ===", final_text, ocr_confidence)
 
         if not final_text.strip():
             result = PrescriptionResult(

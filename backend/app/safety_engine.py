@@ -30,6 +30,9 @@ MAX_DOSAGE_WARNINGS = {
     "sofosbuvir": {"max_mg": 400, "note": "Standard 400mg/day"},
     "entecavir": {"max_mg": 1, "note": "Max 1mg/day for adults"},
     "sitagliptin": {"max_mg": 100, "note": "Max 100mg/day for adults"},
+    "levothyroxine": {"max_mg": 0.3, "note": "Max 300mcg/day for adults"},
+    "raloxifene": {"max_mg": 60, "note": "Typically 60mg/day"},
+    "atenolol": {"max_mg": 100, "note": "Max 100mg/day for adults"},
 }
 
 # Medicines that sound similar (common confusion pairs)
