@@ -56,6 +56,14 @@ def get_current_user(authorization: str | None = Header(default=None)) -> dict:
     return payload
 
 
+def get_optional_user(authorization: str | None = Header(default=None)) -> dict | None:
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    token = authorization.split(" ", 1)[1]
+    payload = decode_token(token)
+    return payload
+
+
 def require_admin(user: dict = Depends(get_current_user)) -> dict:
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
@@ -168,7 +176,7 @@ async def supported_medicines():
 @app.post("/api/analyze", response_model=PrescriptionResult)
 async def analyze_prescription(
     file: UploadFile = File(...),
-    user: dict = Depends(get_current_user),
+    user: dict | None = Depends(get_optional_user),
 ):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No filename provided.")
@@ -205,7 +213,8 @@ async def analyze_prescription(
                 overall_confidence=0.0,
                 disclaimer="No text could be extracted. Please try a clearer photo.",
             )
-            _save_scan_record(user, file.filename, result)
+            if user:
+                _save_scan_record(user, file.filename, result)
             return result
 
         medicines = extract_medicines(final_text)
@@ -224,7 +233,8 @@ async def analyze_prescription(
             overall_confidence=round(overall, 2),
         )
 
-        _save_scan_record(user, file.filename, result)
+        if user:
+            _save_scan_record(user, file.filename, result)
         return result
 
     except Exception as e:
