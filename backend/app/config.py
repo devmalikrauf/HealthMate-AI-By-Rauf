@@ -20,6 +20,8 @@ class Settings:
     JWT_SECRET: str = os.getenv("JWT_SECRET", "healthmate-dev-secret-change-in-prod")
     JWT_EXPIRY_HOURS: int = int(os.getenv("JWT_EXPIRY_HOURS", "72"))
     DB_DIR: str = os.getenv("DB_DIR", "./data")
+    DB_PATH: str = os.getenv("DB_PATH", str(Path(DB_DIR) / "healthmate.db"))
+    GEMINI_API_KEY: str | None = os.getenv("GEMINI_API_KEY", None)
 
     def __init__(self):
         Path(self.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)

@@ -9,6 +9,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse
 from PIL import Image
 from pydantic import BaseModel
 
@@ -35,7 +37,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -224,7 +226,17 @@ async def analyze_prescription(
                 _save_scan_record(user, file.filename, result)
             return result
 
-        medicines = extract_medicines(final_text)
+        # Primary extraction using Gemini API if key is present, fallback to local regex NLP
+        from app.gemini_extractor import extract_medicines_with_gemini
+        
+        medicines = []
+        if settings.GEMINI_API_KEY:
+            logger.info("Using Gemini API for prescription extraction.")
+            medicines = extract_medicines_with_gemini(final_text)
+            
+        if not medicines:
+            logger.info("Using local regex parser for prescription extraction.")
+            medicines = extract_medicines(final_text)
 
         # Enrich medicines with extra info from dataset
         for med in medicines:
@@ -392,6 +404,26 @@ async def feedback_stats(admin: dict = Depends(require_admin)):
         "corrected_samples": corrected,
         "confirmed_correct_samples": confirmed,
     }
+
+
+# ── Serve frontend static files ────────────────────
+
+_frontend_dist = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
+_has_frontend = _frontend_dist.is_dir()
+
+if _has_frontend:
+    _index_html = (_frontend_dist / "index.html").read_text(encoding="utf-8")
+    app.mount("/assets", StaticFiles(directory=str(_frontend_dist / "assets")), name="frontend-assets")
+
+
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    if not _has_frontend:
+        raise HTTPException(status_code=404, detail="Not Found")
+    file_path = _frontend_dist / full_path
+    if full_path and file_path.is_file():
+        return FileResponse(str(file_path))
+    return HTMLResponse(_index_html)
 
 
 if __name__ == "__main__":

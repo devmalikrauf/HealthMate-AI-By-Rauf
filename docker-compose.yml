@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  healthmate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthmate-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - JWT_SECRET=healthmate-secret-change-in-prod-1234
+      - JWT_EXPIRY_HOURS=72
+      - MAX_FILE_SIZE_MB=10
+      # Add your GEMINI_API_KEY here to enable advanced AI parsing fallback
+      - GEMINI_API_KEY=
+    volumes:
+      # Persists SQLite DB and feedback logs in the host system
+      - ./backend/data:/app/data
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped

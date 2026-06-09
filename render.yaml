@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: healthmate-ai
+    env: docker
+    plan: free
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRY_HOURS
+        value: "72"
+      - key: MAX_FILE_SIZE_MB
+        value: "10"
+      # Insert your GEMINI_API_KEY on the Render dashboard to enable high-accuracy AI extraction
+      - key: GEMINI_API_KEY
+        sync: false

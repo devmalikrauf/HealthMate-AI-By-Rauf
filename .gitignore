@@ -1,0 +1,28 @@
+# Python & Node Virtual Environments / Modules
+venv/
+.venv/
+node_modules/
+dist/
+
+# Local databases and backups
+backend/data/*.db
+backend/data/*.bak
+backend/data/healthmate.db
+backend/data/users.json.bak
+backend/data/scans.json.bak
+
+# Uploads directory
+backend/uploads/*
+uploads/*
+!backend/uploads/.gitkeep
+
+# Environment variables & secrets
+.env
+backend/.env
+frontend/.env
+*.log
+
+# IDE files
+.vscode/
+.idea/
+.gemini/
