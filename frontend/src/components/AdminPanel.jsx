@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { admin as adminApi } from "../api";
 
+/* ─── icons ─── */
+const IcoShield = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:"middle",marginRight:"8px",color:"var(--primary)"}}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+
 export default function AdminPanel({ onClose }) {
   const [data, setData] = useState(null);
   const [users, setUsers] = useState([]);
@@ -19,7 +22,7 @@ export default function AdminPanel({ onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="admin-panel" onClick={(e) => e.stopPropagation()}>
         <div className="admin-head">
-          <h2>🛡️ Admin Panel</h2>
+          <h2><IcoShield/>Admin Panel</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
